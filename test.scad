@@ -24,14 +24,14 @@ module onderkant(radius=2) {
         translate ([0,breedte/2,0]) circle(d=hole);
       }
     }
-    translate ([0,breedte/2,dikte-1]) cylinder(d=10.4,h=20);
+    translate ([0,breedte/2,dikte-1]) cylinder(d=10.5,h=20);
   }
 }
 
 module schoefgat() {
   linear_extrude(height=dikte+5) {
     translate ([-5.5,-2,0])  square([1,8]);
-    color("blue") translate ([0,breedte/2,0])  outline() circle(d=10.4);
+    color("blue") translate ([0,breedte/2,0])  outline() circle(d=10.5);
   }
 }
 
@@ -39,14 +39,18 @@ module stulp() {
   translate([6.8,breedte/2,2])
     rotate([90,0,0]) { 
       linear_extrude (height=2) {
-        difference() {
-          square(9.5);
-          translate([10,22.3,0]) circle(20, $fn=100);
-        }
+      //  difference() {
+          square(11);
+       //   translate([10,22.3,0]) circle(20, $fn=100);
+       // }
       }
    }   
 }
-
+difference() {
+    union(){
+        stulp();
+        schoefgat();
+    }
+ translate([17,10,23]) rotate([90,0,0]) cylinder(r=20,h=20, $fn=100);
+}
 onderkant();
-stulp();
-schoefgat();
