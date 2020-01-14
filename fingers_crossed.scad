@@ -1,8 +1,8 @@
 include <cyl_head_bolt.scad>;
 
 $fn = 50;
-lengte=20;
-breedte=6;
+lengte=25;
+breedte=7;
 hoogte=10;
 dikte=5;
 hole=4;
@@ -27,14 +27,17 @@ module base() {
           translate ([0,breedte/2,0]) circle(d=hole);
         }
       }
-      translate ([0,breedte/2,dikte-1]) cylinder(d=10.4,h=20);
+      translate ([0,breedte/2,dikte-1]) 
+        cylinder(d=10.4,h=20);
     }
   }
 
   module schoefgat() {
     linear_extrude(height=dikte+5) {
       translate ([-5.5,-2,0])  square([1,8]);
-      color("blue") translate ([0,breedte/2,0])  outline() circle(d=outerD);
+      color("blue")
+        translate ([0,breedte/2,0])  
+          outline() circle(d=outerD);
     }
   }
 
@@ -51,7 +54,9 @@ module base() {
       translate([6.8,breedte,dikte]) stulp();
       schoefgat();
     }
-    translate([16,10,23+dikte]) rotate([90,0,0]) cylinder(r=20,h=20, $fn=100);
+    translate([16,10,23+dikte])
+      rotate([90,0,0])
+        cylinder(r=20,h=20, $fn=100);
   }
     onderkant();
 }
@@ -69,33 +74,58 @@ module triBrace(x) {
 
 module sqBrace(x) {
   difference() {
-    translate([-4,-5,0]) cube([8, x*3-10, dikte]);
-    translate([0, 0, 50+e]) hole_through(name="M4", l=50+5, cld=0.1, h=10, hcld=0.4);
-    translate([0, 0, 2]) hole_through(name="M5", l=55, cld=0.1, h=10, hcld=0.4);
+    translate([-4,-5,0])
+      union() {
+        cube([10,50-dikte, dikte+1]);
+        translate([10,0,0])
+          cube([2,50-dikte, dikte+4]);
+      }
+    translate([1, 0, 50+e]) hole_through(name="M4", l=50+5, cld=0.1, h=10, hcld=0.4);
+    translate([1, 0, 2]) hole_through(name="M4", l=55, cld=0.1, h=10, hcld=0.4);
 
-    translate([0, x*3-20,  50+e]) hole_through("M4",  l=50+5, cld=0.1, h=10, hcld=0.4);
-    translate([0, x*3-20, 2]) hole_through(name="M5", l=55, cld=0.1, h=10, hcld=0.4);
+    translate([1, 35,  50+e]) hole_through("M4",  l=50+5, cld=0.1, h=10, hcld=0.4);
+    translate([1,35, 2]) hole_through(name="M4", l=55, cld=0.1, h=10, hcld=0.4);
   }
 }
 
-module cutout(x) {
-  translate([lengte+2,x,dikte/2]) rotate([90,0,0]) cylinder(h=2*x,d=dikte-2.8, $fn=3);
-}
-
-module struts() {
-  for (a=[-30:3:30]) {
-    translate([lengte+1.6,a,0]) cylinder(h=dikte-1,r=0.2);
-  }
-}
 
 translate([0,breedte/2,0]) {
-  x=15;
+  x=13;
     linear_extrude(height=dikte)  triBrace(x);
-    translate([lengte,-x-5 , 4]) rotate([0,90,0]) sqBrace(x=20); 
+    translate([lengte,-x-4 , 7]) rotate([0,90,0]) sqBrace(x=20); 
 }
 
 
+module houder() {
+  d=4;
+  h=50;
+  difference() {
+    union() {
+      translate([-5,-5,0]) 
+        cube([10,50-d, d+1]);
+      translate([0,-8,h/2+d+1])
+        rotate([-90,0,0]) 
+          difference() {
+            cylinder(d=h+d,h=h);
+            translate([0,0,d]) 
+              cylinder(d=h,h=h+d);
+            for (z=[0:18:360]) {
+              rotate([0,0,z])
+                translate([0,20,25])
+                  rotate([0,90,0]) 
+                    cube([40,14,5], center=true);
+            }
+          }
+    }
+    translate([0, 0, 50+e]) hole_through(name="M4", l=50+5, cld=0.1, h=10, hcld=0.4);
+    translate([0, 35,  50+e]) hole_through("M4",  l=50, cld=0.1, h=10, hcld=0.4);
+    translate([0, 00,  50+e]) nutcatch_parallel("M4", l=50);
+    translate([0, 35,  50+e]) nutcatch_parallel("M4", l=50);
+  }
 
+}
+
+*translate([lengte+3,-dikte-9,dikte]) rotate([90,0,0]) houder();
 
 // == exaM4le nut catches and holes ==
     // rotate([180,0,0]) nutcatch_parallel("M4", l=5);
